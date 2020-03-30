@@ -6,8 +6,24 @@ namespace exercisesSoloLearn
     {
         static void Main(string[] args)
         {
-            // number is spy number if sum and product of digits are equal
-            // example 123: 1+2+3 = 6  and 1*2*3 = 6
+            MainMenu();
+        }
+
+
+
+
+        // function to figure out how many digits the input has
+        static int CountDigits(int number)
+        {
+            // In case of negative numbers
+            number = Math.Abs(number);
+
+            if (number >= 10)
+                return CountDigits(number / 10) + 1;
+            return 1;
+        }
+        static void MainMenu()
+        {
             Console.WriteLine("-------------------------------------------------------------");
             Console.WriteLine("                     Spy Numbers                             ");
             Console.WriteLine("-------------------------------------------------------------");
@@ -20,6 +36,7 @@ namespace exercisesSoloLearn
             Console.WriteLine("_____________________________________________________________");
             Console.WriteLine();
             string menu;
+
             do
             {
                 Console.WriteLine("     ---------------------------------------------");
@@ -28,96 +45,14 @@ namespace exercisesSoloLearn
                 Console.WriteLine("                 [Q] Quit                         ");
                 Console.WriteLine("     ---------------------------------------------");
                 menu = Console.ReadLine();
-                int amountDigits = 0;
-                int sum = 0;
-                int product = 1;
 
                 if (menu == "c" || menu == "C")
                 {
-                    // promt user for input and store in variable
-                    Console.Write("Which number do you want to check?: ");
-                    int input = Convert.ToInt32(Console.ReadLine());
-                    // create array in size of the number of digits the user enters
-                    amountDigits = CountDigits(input);
-                    int[] digits = new int[amountDigits];
-
-                    // get the digits of the given number
-                    for (int i = 0; i < amountDigits; i++)
-                    {
-                        digits[i] = input % 10;
-                        input /= 10;
-                        // determine sum and product of the digits
-                        sum += digits[i];
-                        if (digits[i] != 0)
-                        {
-                            product *= digits[i];
-                        }
-                    }
-                    // check if it is a spy number
-                    if (sum == product)
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("Your number is a Spy Number!");
-                        Console.WriteLine("The sum of its digits is: {0}", sum);
-                        Console.WriteLine("The Product of it's digits is: {0}", product);
-                        Console.WriteLine();
-                    }
-                    else
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("Your number is NOT a Spy Number!");
-                        Console.WriteLine("The sum of its digits is: {0}", sum);
-                        Console.WriteLine("The Product of it's digits is: {0}", product);
-                        Console.WriteLine();
-                    }
+                    CheckNumber();
                 }
                 else if (menu == "g" || menu == "G")
                 {
-                    // promt user for input and store in variables
-                    Console.Write("Where does your range start?: ");
-                    int start = Convert.ToInt32(Console.ReadLine());
-                    Console.Write("Where does your range end?: ");
-                    int end = Convert.ToInt32(Console.ReadLine());
-                    // create array in size of the number of digits the user enters
-                    amountDigits = CountDigits(end);
-                    int[] digits = new int[amountDigits];
-                    // create array to store potential spynumbers
-                    int rangeLength = end - start;
-                    int[] spyNumbers = new int[rangeLength];
-                    // loop through numbers from start to end
-                    for (int i = 0; i < rangeLength; i++)
-                    {
-                        int loopStart = start + i;
-                        int number = start + i;
-                        sum = 0;
-                        product = 1;
-                        // get the digits of the given number 
-                        for (int j = 0; j < amountDigits; j++)
-                        {
-                            digits[j] = loopStart % 10;
-                            loopStart /= 10;
-                            // determine sum and product of the digits
-                            sum += digits[j];
-                            if (digits[j] != 0)
-                            {
-                                product *= digits[j];
-                            }
-                        }
-                        // if its is a spyNumber put it in the array
-                        if (sum == product)
-                        {
-                            spyNumbers[i] = number;
-                        }
-                    }
-                    Console.WriteLine("Your range from {0} to {1} contains the following SpyNumbers: ", start, end);
-                    for (int i = 0; i < spyNumbers.Length; i++)
-                    {
-                        if (spyNumbers[i] != 0)
-                        {
-                            Console.Write(spyNumbers[i] + " ");
-                        }
-                    }
-                    Console.WriteLine();
+                    CreateNumber();
                 }
                 else if (menu == "q" || menu == "Q")
                 {
@@ -126,17 +61,105 @@ namespace exercisesSoloLearn
                 else
                     Console.WriteLine("Unknown Commmand. Please try again!");
             } while (menu != "q" && menu != "Q");
-            
-            // function to figure out how many digits the input has
-            int CountDigits(int number)
+        }
+        
+        static void CheckNumber()
+        {
+            // promt user for input and store in variable
+            Console.Write("Which number do you want to check?: ");
+            int input = Convert.ToInt32(Console.ReadLine());
+            // determine how many digits that number has
+            int amountDigits = CountDigits(input);
+            // get the single digits of that number
+            int[] digits = GetDigits(amountDigits, input);
+            // determine sum and product of the digits
+            int sum = GetSum(digits);
+            int product = GetProduct(digits);
+            // check if it is a spy number
+            if (sum == product)
             {
-                // In case of negative numbers
-                number = Math.Abs(number);
-
-                if (number >= 10)
-                    return CountDigits(number / 10) + 1;
-                return 1;
+                Console.WriteLine();
+                Console.WriteLine("Your number is a Spy Number!");
+                Console.WriteLine("The sum of its digits is: {0}", sum);
+                Console.WriteLine("The Product of it's digits is: {0}", product);
+                Console.WriteLine();
             }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Your number is NOT a Spy Number!");
+                Console.WriteLine("The sum of its digits is: {0}", sum);
+                Console.WriteLine("The Product of it's digits is: {0}", product);
+                Console.WriteLine();
+            }
+        }
+        
+        static void CreateNumber()
+        {
+            // promt user for input and store in variables
+            Console.Write("Where does your range start?: ");
+            int start = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Where does your range end?: ");
+            int end = Convert.ToInt32(Console.ReadLine());
+            // create array in size of the number of digits the user enters
+            int amountDigits = CountDigits(end);
+            // create array to store potential spynumbers
+            int rangeLength = end - start;
+            int[] spyNumbers = new int[rangeLength];
+
+            // loop through numbers from start to end
+            for (int i = 0; i < rangeLength; i++)
+            {
+                int[] digits = GetDigits(amountDigits, start + i);
+                int sum = GetSum(digits);
+                int product = GetProduct(digits);
+                // if its is a spyNumber put it in the array
+                if (sum == product)
+                {
+                    spyNumbers[i] = start;
+                }
+            }
+            Console.WriteLine("Your range from {0} to {1} contains the following SpyNumbers: ", start, end);
+            for (int i = 0; i < spyNumbers.Length; i++)
+            {
+                if (spyNumbers[i] != 0)
+                {
+                    Console.Write(spyNumbers[i] + " ");
+                }
+            }
+            Console.WriteLine();
+        }
+        static int[] GetDigits(int a, int b)
+        {
+            int[] digits = new int[a];
+            for (int j = 0; j < a; j++)
+                {
+                    digits[j] = b % 10;
+                    b /= 10;
+                }
+            return digits;
+        }
+        static int GetSum(int[] a)
+        {
+            int sum = 0;
+            for (int i = 0; i < a.Length; i++)
+            {
+                sum += a[i];
+            }
+            return sum;
+        }
+        static int GetProduct(int[] a)
+        {
+            int product = 1;
+            for (int i = 0; i < a.Length; i++)
+            {
+                
+                if (a[i] != 0)
+                {
+                    product *= a[i];
+                } 
+            }
+            return product;
         }
     }
 }
